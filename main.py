@@ -27,7 +27,7 @@ def pred_and_plot_image(
     image_size: Tuple[int, int] = (224, 224),
     transform: torchvision.transforms = None,
     device: torch.device = device,
-):
+) -> Tuple[int, str, float]:
     """Predicts on a target image with a target model.
 
     Args:
@@ -36,6 +36,9 @@ def pred_and_plot_image(
         image_size (Tuple[int, int], optional): Size to transform target image to. Defaults to (224, 224).
         transform (torchvision.transforms, optional): Transform to perform on image. Defaults to None which uses ImageNet normalization.
         device (torch.device, optional): Target device to perform prediction on. Defaults to device.
+
+    Returns:
+        Tuple[int, str, float]: The predicted class ID, class name, and prediction probability.
     """
 
     # Open image
@@ -70,11 +73,13 @@ def pred_and_plot_image(
     # Convert prediction probabilities -> prediction labels
     target_image_pred_label = torch.argmax(target_image_pred_probs, dim=1).item()
 
-    # Retrieve the class ID and name
+    # Retrieve the class ID, name, and probability
     class_id, class_name = class_names[target_image_pred_label]
-    return class_id, class_name
+    class_prob = target_image_pred_probs[0, target_image_pred_label].item()
+
+    return class_id, class_name, class_prob
 
 # Example usage:
 # image_bytes = ...  # Your image bytes here
-# class_id, class_name = pred_and_plot_image(image_bytes)
-# print(f"Predicted class ID: {class_id}, class name: {class_name}")
+# class_id, class_name, class_prob = pred_and_plot_image(image_bytes)
+# print(f"Predicted class ID: {class_id}, class name: {class_name}, probability: {class_prob:.4f}")
